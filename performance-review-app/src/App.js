@@ -84,7 +84,17 @@ class App extends Component{
                   disabled = {false}
                   onClick = { ()=> this.doLogout()}
               />
-              
+              <Router>
+                <div className="container">
+                <Navbar />
+                <br/>
+                <Route path="/employeeslist" exact component={EmployeesList} />  
+                <Route path="/edit/:id" component={EditEmployee} />  
+                <Route path="/createemployee" component={CreateEmployee} />  
+                <Route path="/createreview" component={CreateReview} />  
+                <Route path="/listreview" component={ReviewsList} /> 
+                </div>
+              </Router>
           </div>
         );
       }
