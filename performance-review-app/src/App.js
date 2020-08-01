@@ -1,4 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
+import {observer} from 'mobx-react';
+import UserStore from './middleware/UserStore';
+import LoginForm from './LoginForm';
+import SubmitButton from './SubmitButton';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter as Router, Route} from "react-router-dom";
 
@@ -6,23 +10,98 @@ import Navbar from "./components/navbar.component"
 import EmployeesList from "./components/employees-list.component";
 import EditEmployee from "./components/edit-employee.component";
 import CreateEmployee from "./components/create-employee.component";
-//import ExercisesList from "./components/exercises-list.component";
-//import EditExercise from "./components/edit-exercise.component";
-//import CreateExercise from "./components/create-exercise.component";
-//import CreateUser from "./components/create-user.component";
+import CreateReview from "./components/create-review.component";
+import ReviewsList from "./components/reviews-list.component"
 
-function App() {
-  return (
-    <Router>
-      <div className="container">
-      <Navbar />
-      <br/>
-      <Route path="/employeeslist" exact component={EmployeesList} />  
-      <Route path="/edit/:id" component={EditEmployee} />  
-      <Route path="/createemployee" component={CreateEmployee} />  
-      </div>
-    </Router>
-  );
+class App extends Component{
+
+  async componentDidMount(){
+    try{
+        let res = await fetch('isLoggedIn',{
+            method : 'post',
+            headers : {
+                'Accept':'application/json',
+                'Content-Type':'application/json'
+            }
+        });
+
+        let result = await res.json();
+        if(result && result.success){
+          UserStore.loading=false;
+          UserStore.isLoggedIn=true;
+          UserStore.username = result.username;
+        }
+        else{
+          UserStore.loading=false;
+          UserStore.isLoggedIn=true;
+        }
+    }
+    catch(e){
+      UserStore.loading=false;
+      UserStore.isLoggedIn=true;
+    }
+  }
+
+  async doLogout(){
+    try{
+        let res = await fetch('/logout',{
+            method : 'post',
+            headers : {
+                'Accept':'application/json',
+                'Content-Type':'application/json'
+            }
+        });
+
+        let result = await res.json();
+        if(result && result.success){          
+          UserStore.isLoggedIn=false;
+          UserStore.username = '';
+        }        
+    }
+    catch(e){
+      console.log(e);
+      UserStore.isLoggedIn=false;
+          UserStore.username = '';
+    }
+  }
+
+  render(){
+
+    if(UserStore.loading){
+      return(
+        <div>
+           Loading...., please wait!
+        </div>
+      );
+    }
+    else{
+      if(UserStore.isLoggedIn){
+        return(
+          <div>
+              Welcome {UserStore.username}
+              <SubmitButton 
+                  text={'Logout'}
+                  disabled = {false}
+                  onClick = { ()=> this.doLogout()}
+              />
+              
+          </div>
+        );
+      }
+      return(
+        <div className="app">
+          <div className="container">
+              <SubmitButton 
+                  text={'Logout'}
+                  disabled = {false}
+                  onClick = { ()=> this.doLogout()}
+              />
+             <LoginForm/>
+          </div>
+        </div>
+      );
+    }
+  }
 }
 
-export default App;
+export default observer(App);

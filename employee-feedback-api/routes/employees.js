@@ -36,11 +36,12 @@ router.route('/:id').get((req, res) => {
 router.route('/update/:id').post((req,res) => {
     Employee.findById(req.params.id)
       .then(employee => {
+          employee.employeeid = req.body.employeeid;
           employee.firstname = req.body.firstname;
           employee.lastname = req.body.lastname;
-          employee.department =  req.body.lastname;
+          employee.department =  req.body.department;
           employee.email = req.body.email;
-
+          employee.isactive =  req.body.isactive;
           employee.save()
           .then(() => res.json('Employee details updated!'))
           .catch(err => res.status(400).json('Error: ' + err));
