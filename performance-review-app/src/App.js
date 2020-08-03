@@ -54,13 +54,13 @@ class App extends Component{
 
         let result = await res.json();
         if(result && result.success){          
-          UserStore.isLoggedIn=false;
+          UserStore.isLoggedIn=true;//bypass auth for now
           UserStore.username = '';
         }        
     }
     catch(e){
       console.log(e);
-      UserStore.isLoggedIn=false;
+      UserStore.isLoggedIn=true;//bypass auth
           UserStore.username = '';
     }
   }
